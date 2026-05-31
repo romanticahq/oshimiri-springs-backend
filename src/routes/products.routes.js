@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { requireAdminApiKey } from "../middleware/admin-auth.middleware.js";
 import {
   createProduct,
   deleteProduct,
@@ -10,9 +11,9 @@ import {
 const router = Router();
 
 router.get("/", getProducts);
-router.post("/", createProduct);
+router.post("/", requireAdminApiKey, createProduct);
 router.get("/:id", getProductById);
-router.patch("/:id", updateProduct);
-router.delete("/:id", deleteProduct);
+router.patch("/:id", requireAdminApiKey, updateProduct);
+router.delete("/:id", requireAdminApiKey, deleteProduct);
 
 export default router;
