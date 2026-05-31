@@ -1,4 +1,8 @@
 import { prisma } from "../config/prisma.js";
+import {
+  createProductSchema,
+  updateProductSchema,
+} from "../validators/product.validator.js";
 
 export async function getProducts(req, res, next) {
   try {
@@ -57,6 +61,8 @@ export async function getProductById(req, res, next) {
 
 export async function createProduct(req, res, next) {
   try {
+    const validatedData = createProductSchema.parse(req.body);
+
     const {
       name,
       slug,
@@ -68,15 +74,7 @@ export async function createProduct(req, res, next) {
       imageUrl,
       inStock,
       categorySlug,
-    } = req.body;
-
-    if (!name || !slug || !price || !condition || !location || !categorySlug) {
-      return res.status(400).json({
-        message:
-          "name, slug, price, condition, location, and categorySlug are required",
-        status: "error",
-      });
-    }
+    } = validatedData;
 
     const category = await prisma.category.findUnique({
       where: {
@@ -96,8 +94,8 @@ export async function createProduct(req, res, next) {
         name,
         slug,
         description,
-        price: Number(price),
-        currency: currency || "NGN",
+        price,
+        currency,
         condition,
         location,
         imageUrl,
@@ -114,6 +112,14 @@ export async function createProduct(req, res, next) {
       data: product,
     });
   } catch (error) {
+    if (error.name === "ZodError") {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: error.issues,
+        status: "error",
+      });
+    }
+
     if (error.code === "P2002") {
       return res.status(409).json({
         message: "A product with this slug already exists",
@@ -127,6 +133,8 @@ export async function createProduct(req, res, next) {
 
 export async function updateProduct(req, res, next) {
   try {
+    const validatedData = updateProductSchema.parse(req.body);
+
     const existingProduct = await prisma.product.findUnique({
       where: {
         slug: req.params.id,
@@ -151,7 +159,7 @@ export async function updateProduct(req, res, next) {
       imageUrl,
       inStock,
       categorySlug,
-    } = req.body;
+    } = validatedData;
 
     let categoryId = existingProduct.categoryId;
 
@@ -180,7 +188,7 @@ export async function updateProduct(req, res, next) {
         ...(name !== undefined && { name }),
         ...(slug !== undefined && { slug }),
         ...(description !== undefined && { description }),
-        ...(price !== undefined && { price: Number(price) }),
+        ...(price !== undefined && { price }),
         ...(currency !== undefined && { currency }),
         ...(condition !== undefined && { condition }),
         ...(location !== undefined && { location }),
@@ -198,6 +206,14 @@ export async function updateProduct(req, res, next) {
       data: product,
     });
   } catch (error) {
+    if (error.name === "ZodError") {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: error.issues,
+        status: "error",
+      });
+    }
+
     if (error.code === "P2002") {
       return res.status(409).json({
         message: "A product with this slug already exists",
