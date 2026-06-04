@@ -8,10 +8,17 @@ on:
     branches:
       - main
 
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/oshimiri-springs-backend
+
 jobs:
-  build-and-test:
-    name: Build and Docker Check
+  build-and-push:
+    name: Build and Push Backend Image
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
 
     env:
       DATABASE_URL: postgresql://user:password@localhost:5432/database?schema=public
@@ -35,4 +42,12 @@ jobs:
         run: npx prisma generate
 
       - name: Build Docker image
-        run: docker build -t oshimiri-backend:ci .
+        run: docker build -t $IMAGE_NAME:latest .
+
+      - name: Login to GitHub Container Registry
+        if: github.event_name == 'push'
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Push Docker image to GHCR
+        if: github.event_name == 'push'
+        run: docker push $IMAGE_NAME:latest
