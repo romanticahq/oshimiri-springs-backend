@@ -1,4 +1,4 @@
-name: Backend CI
+name: Backend CI/CD
 
 on:
   push:
@@ -51,3 +51,15 @@ jobs:
       - name: Push Docker image to GHCR
         if: github.event_name == 'push'
         run: docker push $IMAGE_NAME:latest
+
+  deploy:
+    name: Deploy Backend on EC2
+    runs-on: self-hosted
+    needs: build-and-push
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Run backend deployment script
+        run: |
+          chmod +x ~/deploy-backend.sh
+          ~/deploy-backend.sh
