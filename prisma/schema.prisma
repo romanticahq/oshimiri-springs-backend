@@ -21,11 +21,18 @@ model Product {
   name        String
   slug        String   @unique
   description String?
-  price       Int
+  price       Int?
   currency    String   @default("NGN")
   condition   String
   location    String
   imageUrl    String?
+  sellerName  String?
+  sellerWhatsapp String?
+  vehicleMakeModel String?
+  yearRange   String?
+  position    String?
+  brand       String?
+  batterySize String?
   inStock     Boolean  @default(true)
 
   categoryId String

@@ -8,6 +8,17 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
+const sellers = {
+  fidel: {
+    sellerName: "Fidel Castro Used & Tokunbo Springs",
+    sellerWhatsapp: "+2349017368066",
+  },
+  oshimiri: {
+    sellerName: "Oshimiri Automotive Marketplace",
+    sellerWhatsapp: "+447380739189",
+  },
+};
+
 async function main() {
 
   const suspension = await prisma.category.upsert({
@@ -27,6 +38,16 @@ async function main() {
       name: "Electronics",
       slug: "electronics",
       description: "Sensors, modules, lighting, and electrical parts.",
+    },
+  });
+
+  const batteries = await prisma.category.upsert({
+    where: { slug: "batteries" },
+    update: {},
+    create: {
+      name: "Batteries",
+      slug: "batteries",
+      description: "Car, van, and commercial vehicle batteries.",
     },
   });
 
@@ -52,7 +73,7 @@ async function main() {
 
   await prisma.product.upsert({
     where: { slug: "front-coil-spring-toyota-camry" },
-    update: {},
+    update: sellers.fidel,
     create: {
       name: "Front Coil Spring - Toyota Camry",
       slug: "front-coil-spring-toyota-camry",
@@ -62,6 +83,10 @@ async function main() {
       condition: "New",
       location: "Lagos, Nigeria",
       imageUrl: "/images/products/front-coil-spring.jpg",
+      ...sellers.fidel,
+      vehicleMakeModel: "Toyota Camry",
+      yearRange: "Seller to confirm",
+      position: "Front",
       inStock: true,
       categoryId: suspension.id,
     },
@@ -69,7 +94,7 @@ async function main() {
 
   await prisma.product.upsert({
     where: { slug: "rear-shock-absorber-honda-accord" },
-    update: {},
+    update: sellers.fidel,
     create: {
       name: "Rear Shock Absorber - Honda Accord",
       slug: "rear-shock-absorber-honda-accord",
@@ -79,6 +104,10 @@ async function main() {
       condition: "New",
       location: "Abuja, Nigeria",
       imageUrl: "/images/products/rear-shock-absorber.jpg",
+      ...sellers.fidel,
+      vehicleMakeModel: "Honda Accord",
+      yearRange: "Seller to confirm",
+      position: "Rear",
       inStock: true,
       categoryId: suspension.id,
     },
@@ -86,7 +115,7 @@ async function main() {
 
   await prisma.product.upsert({
     where: { slug: "led-headlight-unit-bmw-3-series" },
-    update: {},
+    update: sellers.oshimiri,
     create: {
       name: "LED Headlight Unit - BMW 3 Series",
       slug: "led-headlight-unit-bmw-3-series",
@@ -96,10 +125,154 @@ async function main() {
       condition: "Used",
       location: "London, United Kingdom",
       imageUrl: "/images/products/bmw-headlight.jpg",
+      ...sellers.oshimiri,
+      vehicleMakeModel: "BMW 3 Series",
+      yearRange: "Seller to confirm",
       inStock: true,
       categoryId: electronics.id,
     },
   });
+
+  const starterProducts = [
+    {
+      name: "Mercedes Benz Farka 207 Rear Leaf Spring",
+      slug: "mercedes-benz-farka-207-rear-leaf-spring",
+      description:
+        "Rear leaf spring suitable for Mercedes Benz Farka 207. Built for load support and stable suspension performance. Compatibility to be confirmed by seller before purchase.",
+      price: null,
+      currency: "NGN",
+      condition: "Seller to confirm",
+      location: "Nigeria",
+      imageUrl: "/images/products/placeholder-leaf-spring.jpg",
+      ...sellers.fidel,
+      vehicleMakeModel: "Mercedes Benz Farka 207",
+      yearRange: "Seller to confirm",
+      position: "Back",
+      categoryId: suspension.id,
+    },
+    {
+      name: "Mercedes Benz Farka 207 Front Leaf Spring",
+      slug: "mercedes-benz-farka-207-front-leaf-spring",
+      description:
+        "Front leaf spring suitable for Mercedes Benz Farka 207. Seller should confirm packing, measurement, and exact fitment before payment.",
+      price: null,
+      currency: "NGN",
+      condition: "Seller to confirm",
+      location: "Nigeria",
+      imageUrl: "/images/products/placeholder-leaf-spring.jpg",
+      ...sellers.fidel,
+      vehicleMakeModel: "Mercedes Benz Farka 207",
+      yearRange: "Seller to confirm",
+      position: "Front",
+      categoryId: suspension.id,
+    },
+    {
+      name: "Ford Ranger Leaf Spring",
+      slug: "ford-ranger-leaf-spring",
+      description:
+        "Leaf spring for Ford Ranger pickup applications. Suitable fitment depends on model year, loading, and spring packing.",
+      price: null,
+      currency: "NGN",
+      condition: "Seller to confirm",
+      location: "Nigeria",
+      imageUrl: "/images/products/placeholder-leaf-spring.jpg",
+      ...sellers.fidel,
+      vehicleMakeModel: "Ford Ranger",
+      yearRange: "Seller to confirm",
+      position: "Back",
+      categoryId: suspension.id,
+    },
+    {
+      name: "Mitsubishi Canter Rear Leaf Spring",
+      slug: "mitsubishi-canter-rear-leaf-spring",
+      description:
+        "Rear leaf spring for Mitsubishi Canter truck and bus applications. Confirm model, packing, and measurement with seller.",
+      price: null,
+      currency: "NGN",
+      condition: "Seller to confirm",
+      location: "Nigeria",
+      imageUrl: "/images/products/placeholder-helper-spring.jpg",
+      ...sellers.fidel,
+      vehicleMakeModel: "Mitsubishi Canter",
+      yearRange: "Seller to confirm",
+      position: "Back",
+      categoryId: suspension.id,
+    },
+    {
+      name: "Nissan Cabstar New Model Leaf Spring",
+      slug: "nissan-cabstar-new-model-leaf-spring",
+      description:
+        "Leaf spring for Nissan Cabstar new model applications. Confirm year range, chassis, and spring packing before purchase.",
+      price: null,
+      currency: "NGN",
+      condition: "Seller to confirm",
+      location: "Nigeria",
+      imageUrl: "/images/products/placeholder-leaf-spring.jpg",
+      ...sellers.fidel,
+      vehicleMakeModel: "Nissan Cabstar",
+      yearRange: "Seller to confirm",
+      position: "Seller to confirm",
+      categoryId: suspension.id,
+    },
+    {
+      name: "Suspension Bushing Set",
+      slug: "suspension-bushing-set",
+      description:
+        "Suspension bushing set for automotive leaf spring and suspension applications. Exact size and vehicle fitment must be confirmed by seller.",
+      price: null,
+      currency: "NGN",
+      condition: "New",
+      location: "Nigeria",
+      imageUrl: "/images/products/placeholder-bushings.jpg",
+      ...sellers.fidel,
+      vehicleMakeModel: "Universal - seller to confirm",
+      yearRange: "Seller to confirm",
+      position: "Bushing",
+      categoryId: suspension.id,
+    },
+    {
+      name: "75Ah Car Battery",
+      slug: "75ah-car-battery",
+      description:
+        "75Ah car battery for many saloon cars and small SUVs. Brand, warranty, terminal position, and compatibility to be confirmed before purchase.",
+      price: null,
+      currency: "NGN",
+      condition: "New",
+      location: "Nigeria",
+      imageUrl: "/images/products/placeholder-car-battery.jpg",
+      ...sellers.oshimiri,
+      vehicleMakeModel: "Universal - seller to confirm",
+      yearRange: "Seller to confirm",
+      brand: "Seller to confirm",
+      batterySize: "75Ah",
+      categoryId: batteries.id,
+    },
+    {
+      name: "100Ah Van Battery",
+      slug: "100ah-van-battery",
+      description:
+        "100Ah battery suitable for vans, buses, SUVs, and larger vehicles depending on fitment. Confirm brand, warranty, and terminal position.",
+      price: null,
+      currency: "NGN",
+      condition: "New",
+      location: "Nigeria",
+      imageUrl: "/images/products/placeholder-car-battery.jpg",
+      ...sellers.oshimiri,
+      vehicleMakeModel: "Vans and commercial vehicles - seller to confirm",
+      yearRange: "Seller to confirm",
+      brand: "Seller to confirm",
+      batterySize: "100Ah",
+      categoryId: batteries.id,
+    },
+  ];
+
+  for (const product of starterProducts) {
+    await prisma.product.upsert({
+      where: { slug: product.slug },
+      update: product,
+      create: product,
+    });
+  }
 
   console.log("Database seeded successfully.");
 }
