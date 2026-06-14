@@ -54,7 +54,7 @@ async function main() {
     },
   });
 
-  await prisma.category.upsert({
+  const engines = await prisma.category.upsert({
     where: { slug: "engines" },
     update: {},
     create: {
@@ -64,7 +64,7 @@ async function main() {
     },
   });
 
-  await prisma.category.upsert({
+  const bodyParts = await prisma.category.upsert({
     where: { slug: "body-parts" },
     update: {},
     create: {
@@ -140,6 +140,86 @@ async function main() {
   });
 
   const starterProducts = [
+    {
+      name: "Complete Engine Assembly",
+      slug: "complete-engine-assembly",
+      description:
+        "Complete engine assembly for cars, vans, buses, and commercial vehicles. Buyer must confirm engine code, fuel type, mileage, and compatibility before payment.",
+      price: null,
+      currency: "NGN",
+      condition: "Tokunbo",
+      location: "Nigeria",
+      imageUrl: "/images/products/category-engine-parts.jpg",
+      ...sellers.oshimiri,
+      vehicleMakeModel: "Cars, vans, buses, and commercial vehicles - seller to confirm",
+      yearRange: "Seller to confirm",
+      position: "Engine bay",
+      categoryId: engines.id,
+    },
+    {
+      name: "Engine Parts & Accessories",
+      slug: "engine-parts-accessories",
+      description:
+        "Engine parts including belts, pulleys, hoses, filters, and related accessories. Exact vehicle fitment and part number should be confirmed by seller.",
+      price: null,
+      currency: "NGN",
+      condition: "New / Tokunbo",
+      location: "Nigeria",
+      imageUrl: "/images/products/category-engine-parts.jpg",
+      ...sellers.oshimiri,
+      vehicleMakeModel: "Cars, vans, buses, and commercial vehicles - seller to confirm",
+      yearRange: "Seller to confirm",
+      position: "Engine",
+      categoryId: engines.id,
+    },
+    {
+      name: "Front Bumper Assembly",
+      slug: "front-bumper-assembly",
+      description:
+        "Front bumper assembly for cars, vans, buses, and pickups. Buyer should confirm model year, colour, sensor holes, and fitting points before purchase.",
+      price: null,
+      currency: "NGN",
+      condition: "New / Tokunbo",
+      location: "Nigeria",
+      imageUrl: "/images/products/category-body-parts.jpg",
+      ...sellers.oshimiri,
+      vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
+      yearRange: "Seller to confirm",
+      position: "Front body",
+      categoryId: bodyParts.id,
+    },
+    {
+      name: "Side Mirror Assembly",
+      slug: "side-mirror-assembly",
+      description:
+        "Side mirror assembly for automotive replacement. Confirm left/right side, power folding, indicators, colour, and vehicle year before payment.",
+      price: null,
+      currency: "NGN",
+      condition: "New / Tokunbo",
+      location: "Nigeria",
+      imageUrl: "/images/products/category-body-parts.jpg",
+      ...sellers.oshimiri,
+      vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
+      yearRange: "Seller to confirm",
+      position: "Side body",
+      categoryId: bodyParts.id,
+    },
+    {
+      name: "Fender Panel / Body Trim",
+      slug: "fender-panel-body-trim",
+      description:
+        "Exterior body panel and trim listings. Buyer should confirm side, model, year, colour, and mounting points with seller.",
+      price: null,
+      currency: "NGN",
+      condition: "New / Tokunbo",
+      location: "Nigeria",
+      imageUrl: "/images/products/category-body-parts.jpg",
+      ...sellers.oshimiri,
+      vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
+      yearRange: "Seller to confirm",
+      position: "Exterior body",
+      categoryId: bodyParts.id,
+    },
     {
       name: "Mercedes Benz Farka 207 Rear Leaf Spring",
       slug: "mercedes-benz-farka-207-rear-leaf-spring",
