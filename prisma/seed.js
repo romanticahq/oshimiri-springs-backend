@@ -74,6 +74,21 @@ async function main() {
     },
   });
 
+  await prisma.product.deleteMany({
+    where: {
+      slug: {
+        in: [
+          "ac-compressor-electrical-controls",
+          "automotive-sensors",
+          "fuse-box",
+          "headlight-assembly",
+          "tail-light-assembly",
+          "wiring-harness",
+        ],
+      },
+    },
+  });
+
   await prisma.product.upsert({
     where: { slug: "front-coil-spring-toyota-camry" },
     update: {
@@ -100,7 +115,10 @@ async function main() {
 
   await prisma.product.upsert({
     where: { slug: "rear-shock-absorber-honda-accord" },
-    update: sellers.fidel,
+    update: {
+      imageUrl: "/images/products/product-honda-accord-rear-shock.jpg",
+      ...sellers.fidel,
+    },
     create: {
       name: "Rear Shock Absorber - Honda Accord",
       slug: "rear-shock-absorber-honda-accord",
@@ -109,7 +127,7 @@ async function main() {
       currency: "NGN",
       condition: "New",
       location: "Abuja, Nigeria",
-      imageUrl: "/images/products/rear-shock-absorber.jpg",
+      imageUrl: "/images/products/product-honda-accord-rear-shock.jpg",
       ...sellers.fidel,
       vehicleMakeModel: "Honda Accord",
       yearRange: "Seller to confirm",
@@ -121,7 +139,10 @@ async function main() {
 
   await prisma.product.upsert({
     where: { slug: "led-headlight-unit-bmw-3-series" },
-    update: sellers.oshimiri,
+    update: {
+      imageUrl: "/images/products/product-bmw-3-series-led-headlight.jpg",
+      ...sellers.oshimiri,
+    },
     create: {
       name: "LED Headlight Unit - BMW 3 Series",
       slug: "led-headlight-unit-bmw-3-series",
@@ -130,7 +151,7 @@ async function main() {
       currency: "NGN",
       condition: "Used",
       location: "London, United Kingdom",
-      imageUrl: "/images/products/bmw-headlight.jpg",
+      imageUrl: "/images/products/product-bmw-3-series-led-headlight.jpg",
       ...sellers.oshimiri,
       vehicleMakeModel: "BMW 3 Series",
       yearRange: "Seller to confirm",
@@ -144,12 +165,12 @@ async function main() {
       name: "Complete Engine Assembly",
       slug: "complete-engine-assembly",
       description:
-        "Complete engine assembly for cars, vans, buses, and commercial vehicles. Buyer must confirm engine code, fuel type, mileage, and compatibility before payment.",
+        "Complete tokunbo engine assembly for cars, vans, buses, and commercial vehicles. Confirm engine code, fuel type, mileage, gearbox compatibility, and warranty terms with seller.",
       price: null,
       currency: "NGN",
       condition: "Tokunbo",
       location: "Nigeria",
-      imageUrl: "/images/products/category-engine-parts.jpg",
+      imageUrl: "/images/products/product-complete-engine-assembly.jpg",
       ...sellers.oshimiri,
       vehicleMakeModel: "Cars, vans, buses, and commercial vehicles - seller to confirm",
       yearRange: "Seller to confirm",
@@ -157,15 +178,15 @@ async function main() {
       categoryId: engines.id,
     },
     {
-      name: "Engine Parts & Accessories",
+      name: "Engine Service Parts Kit",
       slug: "engine-parts-accessories",
       description:
-        "Engine parts including belts, pulleys, hoses, filters, and related accessories. Exact vehicle fitment and part number should be confirmed by seller.",
+        "Engine service parts such as belts, filters, hoses, pulleys, plugs, and gasket items. Confirm part number, engine type, and vehicle fitment before payment.",
       price: null,
       currency: "NGN",
       condition: "New / Tokunbo",
       location: "Nigeria",
-      imageUrl: "/images/products/category-engine-parts.jpg",
+      imageUrl: "/images/products/product-engine-parts-accessories.jpg",
       ...sellers.oshimiri,
       vehicleMakeModel: "Cars, vans, buses, and commercial vehicles - seller to confirm",
       yearRange: "Seller to confirm",
@@ -176,12 +197,12 @@ async function main() {
       name: "Front Bumper Assembly",
       slug: "front-bumper-assembly",
       description:
-        "Front bumper assembly for cars, vans, buses, and pickups. Buyer should confirm model year, colour, sensor holes, and fitting points before purchase.",
+        "Front bumper assembly for cars, vans, buses, and pickups. Confirm exact model year, colour, grille opening, sensor holes, fog-lamp spaces, and mounting points.",
       price: null,
       currency: "NGN",
       condition: "New / Tokunbo",
       location: "Nigeria",
-      imageUrl: "/images/products/category-body-parts.jpg",
+      imageUrl: "/images/products/product-front-bumper-assembly.jpg",
       ...sellers.oshimiri,
       vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
       yearRange: "Seller to confirm",
@@ -192,12 +213,12 @@ async function main() {
       name: "Side Mirror Assembly",
       slug: "side-mirror-assembly",
       description:
-        "Side mirror assembly for automotive replacement. Confirm left/right side, power folding, indicators, colour, and vehicle year before payment.",
+        "Side mirror assembly for automotive replacement. Confirm left/right side, power folding, indicator light, camera support, colour, and vehicle year before payment.",
       price: null,
       currency: "NGN",
       condition: "New / Tokunbo",
       location: "Nigeria",
-      imageUrl: "/images/products/category-body-parts.jpg",
+      imageUrl: "/images/products/product-side-mirror-assembly.jpg",
       ...sellers.oshimiri,
       vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
       yearRange: "Seller to confirm",
@@ -205,15 +226,15 @@ async function main() {
       categoryId: bodyParts.id,
     },
     {
-      name: "Fender Panel / Body Trim",
+      name: "Fender Panel and Body Trim",
       slug: "fender-panel-body-trim",
       description:
-        "Exterior body panel and trim listings. Buyer should confirm side, model, year, colour, and mounting points with seller.",
+        "Exterior fender panel and trim pieces for body repair. Confirm left/right side, vehicle model, year, colour, panel edges, clips, and mounting points with seller.",
       price: null,
       currency: "NGN",
       condition: "New / Tokunbo",
       location: "Nigeria",
-      imageUrl: "/images/products/category-body-parts.jpg",
+      imageUrl: "/images/products/product-fender-panel-body-trim.jpg",
       ...sellers.oshimiri,
       vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
       yearRange: "Seller to confirm",
@@ -325,7 +346,7 @@ async function main() {
       currency: "NGN",
       condition: "New",
       location: "Nigeria",
-      imageUrl: "/images/products/placeholder-car-battery.jpg",
+      imageUrl: "/images/products/product-75ah-car-battery.jpg",
       ...sellers.oshimiri,
       vehicleMakeModel: "Universal - seller to confirm",
       yearRange: "Seller to confirm",
@@ -342,7 +363,7 @@ async function main() {
       currency: "NGN",
       condition: "New",
       location: "Nigeria",
-      imageUrl: "/images/products/placeholder-car-battery.jpg",
+      imageUrl: "/images/products/product-100ah-van-battery.jpg",
       ...sellers.oshimiri,
       vehicleMakeModel: "Vans and commercial vehicles - seller to confirm",
       yearRange: "Seller to confirm",
@@ -354,7 +375,7 @@ async function main() {
       name: "Alternator",
       slug: "alternator",
       description:
-        "Automotive alternator for cars, vans, buses, and pickups. Seller must confirm amperage, plug type, pulley type, and vehicle fitment before purchase.",
+        "Replacement automotive alternator for cars, vans, buses, and pickups. Powers vehicle electrical systems and keeps the battery charged while the engine is running. Buyer should confirm amperage, plug type, pulley type, vehicle model, year, and mounting points with seller before payment.",
       price: null,
       currency: "NGN",
       condition: "Seller to confirm",
@@ -383,86 +404,6 @@ async function main() {
       categoryId: electricalParts.id,
     },
     {
-      name: "Headlight Assembly",
-      slug: "headlight-assembly",
-      description:
-        "Headlight assembly for cars, vans, buses, and pickups. Buyer should confirm left/right side, model year, and lamp type before purchase.",
-      price: null,
-      currency: "NGN",
-      condition: "Seller to confirm",
-      location: "Nigeria",
-      imageUrl: "/images/products/placeholder-light-assembly.jpg",
-      ...sellers.oshimiri,
-      vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
-      yearRange: "Seller to confirm",
-      position: "Front lighting",
-      categoryId: electricalParts.id,
-    },
-    {
-      name: "Tail Light Assembly",
-      slug: "tail-light-assembly",
-      description:
-        "Tail light assembly for automotive rear lighting replacement. Confirm left/right side, model, and year with seller.",
-      price: null,
-      currency: "NGN",
-      condition: "Seller to confirm",
-      location: "Nigeria",
-      imageUrl: "/images/products/placeholder-tail-light-assembly.jpg",
-      ...sellers.oshimiri,
-      vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
-      yearRange: "Seller to confirm",
-      position: "Rear lighting",
-      categoryId: electricalParts.id,
-    },
-    {
-      name: "Automotive Sensors",
-      slug: "automotive-sensors",
-      description:
-        "Vehicle sensors for engine and body systems. Exact sensor type, part number, and vehicle compatibility must be confirmed before purchase.",
-      price: null,
-      currency: "NGN",
-      condition: "Seller to confirm",
-      location: "Nigeria",
-      imageUrl: "/images/products/placeholder-sensors-fuse-box.jpg",
-      ...sellers.oshimiri,
-      vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
-      yearRange: "Seller to confirm",
-      position: "Sensor",
-      categoryId: electricalParts.id,
-    },
-    {
-      name: "Fuse Box",
-      slug: "fuse-box",
-      description:
-        "Automotive fuse box replacement. Confirm part number, vehicle model, connector layout, and fuse arrangement with seller.",
-      price: null,
-      currency: "NGN",
-      condition: "Seller to confirm",
-      location: "Nigeria",
-      imageUrl: "/images/products/placeholder-fuse-box.jpg",
-      ...sellers.oshimiri,
-      vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
-      yearRange: "Seller to confirm",
-      position: "Electrical box",
-      categoryId: electricalParts.id,
-    },
-    {
-      name: "Wiring Harness",
-      slug: "wiring-harness",
-      description:
-        "Automotive wiring harness for vehicle electrical connections. Seller must confirm connector type, vehicle model, and application.",
-      price: null,
-      currency: "NGN",
-      condition: "Seller to confirm",
-      location: "Nigeria",
-      imageUrl: "/images/products/placeholder-wiring-harness.jpg",
-      ...sellers.oshimiri,
-      vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
-      yearRange: "Seller to confirm",
-      position: "Wiring",
-      categoryId: electricalParts.id,
-    },
-    {
       name: "Cooling Fan",
       slug: "cooling-fan",
       description:
@@ -476,22 +417,6 @@ async function main() {
       vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
       yearRange: "Seller to confirm",
       position: "Cooling system",
-      categoryId: electricalParts.id,
-    },
-    {
-      name: "AC Compressor Electrical Controls",
-      slug: "ac-compressor-electrical-controls",
-      description:
-        "Electrical controls and related components for automotive AC compressor systems. Seller should confirm AC system type and exact vehicle application.",
-      price: null,
-      currency: "NGN",
-      condition: "Seller to confirm",
-      location: "Nigeria",
-      imageUrl: "/images/products/placeholder-ac-controls.jpg",
-      ...sellers.oshimiri,
-      vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
-      yearRange: "Seller to confirm",
-      position: "AC electrical control",
       categoryId: electricalParts.id,
     },
     {
