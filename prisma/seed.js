@@ -19,6 +19,26 @@ const sellers = {
   },
 };
 
+const starterPriceBySlug = {
+  "complete-engine-assembly": 750000,
+  "engine-parts-accessories": 35000,
+  "front-bumper-assembly": 180000,
+  "side-mirror-assembly": 65000,
+  "fender-panel-body-trim": 120000,
+  "mercedes-benz-farka-207-rear-leaf-spring": 95000,
+  "mercedes-benz-farka-207-front-leaf-spring": 85000,
+  "ford-ranger-leaf-spring": 120000,
+  "mitsubishi-canter-rear-leaf-spring": 145000,
+  "nissan-cabstar-new-model-leaf-spring": 135000,
+  "suspension-bushing-set": 25000,
+  "75ah-car-battery": 145000,
+  "100ah-van-battery": 210000,
+  alternator: 85000,
+  "starter-motor": 90000,
+  "cooling-fan": 60000,
+  "ecu-control-module": 160000,
+};
+
 async function main() {
 
   const suspension = await prisma.category.upsert({
@@ -441,10 +461,15 @@ async function main() {
   ];
 
   for (const product of starterProducts) {
+    const productWithPrice = {
+      ...product,
+      price: product.price ?? starterPriceBySlug[product.slug] ?? null,
+    };
+
     await prisma.product.upsert({
-      where: { slug: product.slug },
-      update: product,
-      create: product,
+      where: { slug: productWithPrice.slug },
+      update: productWithPrice,
+      create: productWithPrice,
     });
   }
 
