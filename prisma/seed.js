@@ -14,7 +14,7 @@ const sellers = {
     sellerWhatsapp: "+2349017368066",
   },
   oshimiri: {
-    sellerName: "Oshimiri Automotive Marketplace",
+    sellerName: "Oshimiri Sourcing Desk",
     sellerWhatsapp: "+447380739189",
   },
 };
@@ -153,7 +153,7 @@ async function main() {
       price: 180000,
       currency: "NGN",
       condition: "Used",
-      location: "London, United Kingdom",
+      location: "Nigeria",
       imageUrl: "/images/products/product-bmw-3-series-led-headlight.jpg",
       ...sellers.oshimiri,
       vehicleMakeModel: "BMW 3 Series",

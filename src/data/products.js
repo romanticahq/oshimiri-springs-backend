@@ -28,7 +28,7 @@ export const products = [
     price: 180000,
     currency: "NGN",
     condition: "Used",
-    location: "London, United Kingdom",
+    location: "Nigeria",
     imageUrl: "/images/products/bmw-headlight.jpg",
     inStock: true,
   },
