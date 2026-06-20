@@ -66,9 +66,12 @@ async function main() {
 
   const bodyParts = await prisma.category.upsert({
     where: { slug: "body-parts" },
-    update: {},
+    update: {
+      name: "Exterior Parts",
+      description: "Exterior panels, bumpers, mirrors, and trims.",
+    },
     create: {
-      name: "Body Parts",
+      name: "Exterior Parts",
       slug: "body-parts",
       description: "Exterior panels, bumpers, mirrors, and trims.",
     },
@@ -206,7 +209,7 @@ async function main() {
       ...sellers.oshimiri,
       vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
       yearRange: "Seller to confirm",
-      position: "Front body",
+      position: "Front exterior",
       categoryId: bodyParts.id,
     },
     {
@@ -222,14 +225,14 @@ async function main() {
       ...sellers.oshimiri,
       vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
       yearRange: "Seller to confirm",
-      position: "Side body",
+      position: "Side exterior",
       categoryId: bodyParts.id,
     },
     {
-      name: "Fender Panel and Body Trim",
+      name: "Fender Panel and Exterior Trim",
       slug: "fender-panel-body-trim",
       description:
-        "Exterior fender panel and trim pieces for body repair. Confirm left/right side, vehicle model, year, colour, panel edges, clips, and mounting points with seller.",
+        "Exterior fender panel and trim pieces for vehicle repair. Confirm left/right side, vehicle model, year, colour, panel edges, clips, and mounting points with seller.",
       price: null,
       currency: "NGN",
       condition: "New / Tokunbo",
@@ -238,7 +241,7 @@ async function main() {
       ...sellers.oshimiri,
       vehicleMakeModel: "Cars, vans, buses, and pickups - seller to confirm",
       yearRange: "Seller to confirm",
-      position: "Exterior body",
+      position: "Exterior trim",
       categoryId: bodyParts.id,
     },
     {

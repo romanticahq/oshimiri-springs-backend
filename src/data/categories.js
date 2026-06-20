@@ -11,12 +11,12 @@ export const categories = [
   },
   {
     id: "body-parts",
-    name: "Body Parts",
+    name: "Exterior Parts",
     description: "Exterior panels, bumpers, mirrors, and trims.",
   },
   {
     id: "electronics",
-    name: "Electronics",
-    description: "Sensors, modules, lighting, and electrical parts.",
+    name: "Electrical Parts",
+    description: "Alternators, starter motors, cooling fans, control modules, and other automotive electrical parts.",
   },
 ];
