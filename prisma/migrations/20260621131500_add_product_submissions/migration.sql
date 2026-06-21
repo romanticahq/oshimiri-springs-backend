@@ -1,0 +1,25 @@
+CREATE TABLE "ProductSubmission" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "categorySlug" TEXT NOT NULL,
+    "price" INTEGER,
+    "priceLabel" TEXT,
+    "condition" TEXT NOT NULL,
+    "location" TEXT NOT NULL,
+    "imageUrl" TEXT,
+    "imageUrls" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
+    "sellerName" TEXT NOT NULL,
+    "sellerWhatsapp" TEXT NOT NULL,
+    "vehicleMakeModel" TEXT,
+    "yearRange" TEXT,
+    "position" TEXT,
+    "brand" TEXT,
+    "batterySize" TEXT,
+    "description" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "adminNote" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ProductSubmission_pkey" PRIMARY KEY ("id")
+);

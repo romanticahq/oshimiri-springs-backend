@@ -6,12 +6,18 @@ import {
 
 export async function getEngineers(req, res, next) {
   try {
-    const { location, specialty, q } = req.query;
+    const { location, coverageArea, specialty, q } = req.query;
     const engineers = await prisma.engineer.findMany({
       where: {
         ...(location && {
           location: {
             contains: location,
+            mode: "insensitive",
+          },
+        }),
+        ...(coverageArea && {
+          coverageArea: {
+            contains: coverageArea,
             mode: "insensitive",
           },
         }),
@@ -25,6 +31,7 @@ export async function getEngineers(req, res, next) {
           OR: [
             { name: { contains: q, mode: "insensitive" } },
             { location: { contains: q, mode: "insensitive" } },
+            { coverageArea: { contains: q, mode: "insensitive" } },
             { specialty: { contains: q, mode: "insensitive" } },
             { description: { contains: q, mode: "insensitive" } },
           ],

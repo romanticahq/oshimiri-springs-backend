@@ -26,6 +26,7 @@ const sellerProfiles = {
     whatsapp: "+2349017368066",
     phone: "+2349017368066",
     location: "Nigeria",
+    coverageArea: "Nationwide / seller to confirm",
     specialty: "Leaf springs, coil springs, bushings, and suspension parts",
     description:
       "Verified Oshimiri seller for used and tokunbo suspension parts. Buyers should confirm exact fitment, condition, and availability before payment.",
@@ -38,6 +39,7 @@ const sellerProfiles = {
     whatsapp: "+447380739189",
     phone: "+447380739189",
     location: "Nigeria",
+    coverageArea: "Nationwide sourcing support",
     specialty: "Parts sourcing, batteries, engines, exterior parts, and electrical parts",
     description:
       "Oshimiri support desk for parts sourcing, seller coordination, and buyer enquiries across Nigeria.",
@@ -50,6 +52,7 @@ const sellerProfiles = {
     whatsapp: "+2349017368066",
     phone: "+2349017368066",
     location: "Nigeria",
+    coverageArea: "Nationwide / seller to confirm",
     specialty: "Suspension springs and commercial vehicle spring support",
     description:
       "Featured suspension seller for springs and suspension support. Availability and prices should be confirmed directly.",
@@ -96,6 +99,7 @@ async function main() {
       whatsapp: "+2349017368066",
       phone: "+2349017368066",
       location: "Nigeria",
+      coverageArea: "Nationwide / seller to confirm",
       specialty: "Inspection, fitting, suspension, engine, and general vehicle repair",
       experience: "Seller to confirm",
       description:
@@ -110,6 +114,7 @@ async function main() {
       whatsapp: "+2349017368066",
       phone: "+2349017368066",
       location: "Nigeria",
+      coverageArea: "Nationwide / seller to confirm",
       specialty: "Inspection, fitting, suspension, engine, and general vehicle repair",
       experience: "Seller to confirm",
       description:
@@ -207,6 +212,7 @@ async function main() {
       currency: "NGN",
       condition: "New",
       location: "Lagos, Nigeria",
+      coverageArea: "South West / Lagos Axis",
       imageUrl: "/images/products/product-toyota-camry-front-coil-spring.jpg",
       imageUrls: ["/images/products/product-toyota-camry-front-coil-spring.jpg"],
       ...sellers.fidel,
@@ -235,6 +241,7 @@ async function main() {
       currency: "NGN",
       condition: "New",
       location: "Abuja, Nigeria",
+      coverageArea: "North Central / Abuja Axis",
       imageUrl: "/images/products/product-honda-accord-rear-shock.jpg",
       imageUrls: ["/images/products/product-honda-accord-rear-shock.jpg"],
       ...sellers.fidel,
@@ -263,6 +270,7 @@ async function main() {
       currency: "NGN",
       condition: "Used",
       location: "Nigeria",
+      coverageArea: "Nationwide / seller to confirm",
       imageUrl: "/images/products/product-bmw-3-series-led-headlight.jpg",
       imageUrls: ["/images/products/product-bmw-3-series-led-headlight.jpg"],
       ...sellers.oshimiri,

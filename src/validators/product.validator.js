@@ -13,6 +13,7 @@ export const createProductSchema = z.object({
   currency: z.string().trim().default("NGN"),
   condition: z.string().trim().min(2, "condition is required"),
   location: z.string().trim().min(2, "location is required"),
+  coverageArea: z.string().trim().optional(),
   imageUrl: z.string().trim().optional(),
   imageUrls: z.array(z.string().trim().min(1)).optional(),
   sellerName: z.string().trim().min(2, "sellerName must be at least 2 characters").optional(),

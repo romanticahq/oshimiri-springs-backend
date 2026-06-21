@@ -10,6 +10,7 @@ export const createSellerSchema = z.object({
   whatsapp: z.string().trim().min(7, "whatsapp is required"),
   phone: z.string().trim().optional(),
   location: z.string().trim().optional(),
+  coverageArea: z.string().trim().optional(),
   specialty: z.string().trim().optional(),
   description: z.string().trim().optional(),
   verified: z.boolean().optional(),

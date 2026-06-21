@@ -10,6 +10,7 @@ export const createEngineerSchema = z.object({
   whatsapp: z.string().trim().min(7, "whatsapp is required"),
   phone: z.string().trim().optional(),
   location: z.string().trim().min(2, "location is required"),
+  coverageArea: z.string().trim().optional(),
   specialty: z.string().trim().min(2, "specialty is required"),
   experience: z.string().trim().optional(),
   description: z.string().trim().optional(),

@@ -10,6 +10,7 @@ export async function getProducts(req, res, next) {
       category,
       condition,
       location,
+      coverageArea,
       make,
       model,
       year,
@@ -36,6 +37,12 @@ export async function getProducts(req, res, next) {
           mode: "insensitive",
         },
       }),
+      ...(coverageArea && {
+        coverageArea: {
+          contains: coverageArea,
+          mode: "insensitive",
+        },
+      }),
       ...(seller && {
         OR: [
           {
@@ -57,6 +64,7 @@ export async function getProducts(req, res, next) {
             { name: { contains: term, mode: "insensitive" } },
             { description: { contains: term, mode: "insensitive" } },
             { location: { contains: term, mode: "insensitive" } },
+            { coverageArea: { contains: term, mode: "insensitive" } },
             { condition: { contains: term, mode: "insensitive" } },
             { vehicleMakeModel: { contains: term, mode: "insensitive" } },
             { yearRange: { contains: term, mode: "insensitive" } },
@@ -127,6 +135,7 @@ export async function createProduct(req, res, next) {
       currency,
       condition,
       location,
+      coverageArea,
       imageUrl,
       imageUrls,
       sellerName,
@@ -179,6 +188,7 @@ export async function createProduct(req, res, next) {
         currency,
         condition,
         location,
+        coverageArea,
         imageUrl,
         imageUrls: imageUrls ?? [],
         sellerName: seller?.name ?? sellerName,
@@ -248,6 +258,7 @@ export async function updateProduct(req, res, next) {
       currency,
       condition,
       location,
+      coverageArea,
       imageUrl,
       imageUrls,
       sellerName,
@@ -317,6 +328,7 @@ export async function updateProduct(req, res, next) {
         ...(currency !== undefined && { currency }),
         ...(condition !== undefined && { condition }),
         ...(location !== undefined && { location }),
+        ...(coverageArea !== undefined && { coverageArea }),
         ...(imageUrl !== undefined && { imageUrl }),
         ...(imageUrls !== undefined && { imageUrls }),
         ...(sellerName !== undefined && { sellerName }),
