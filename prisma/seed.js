@@ -19,6 +19,45 @@ const sellers = {
   },
 };
 
+const sellerProfiles = {
+  fidel: {
+    name: "Fidel Castro Used & Tokunbo Springs",
+    slug: "fidel-castro-used-tokunbo-springs",
+    whatsapp: "+2349017368066",
+    phone: "+2349017368066",
+    location: "Nigeria",
+    specialty: "Leaf springs, coil springs, bushings, and suspension parts",
+    description:
+      "Verified Oshimiri seller for used and tokunbo suspension parts. Buyers should confirm exact fitment, condition, and availability before payment.",
+    verified: true,
+    rating: "4.7",
+  },
+  oshimiri: {
+    name: "Oshimiri Sourcing Desk",
+    slug: "oshimiri-sourcing-desk",
+    whatsapp: "+447380739189",
+    phone: "+447380739189",
+    location: "Nigeria",
+    specialty: "Parts sourcing, batteries, engines, exterior parts, and electrical parts",
+    description:
+      "Oshimiri support desk for parts sourcing, seller coordination, and buyer enquiries across Nigeria.",
+    verified: true,
+    rating: "4.8",
+  },
+  ekSprings: {
+    name: "E&K Springs Enterprises",
+    slug: "ek-springs-enterprises",
+    whatsapp: "+2349017368066",
+    phone: "+2349017368066",
+    location: "Nigeria",
+    specialty: "Suspension springs and commercial vehicle spring support",
+    description:
+      "Featured suspension seller for springs and suspension support. Availability and prices should be confirmed directly.",
+    verified: true,
+    rating: "4.8",
+  },
+};
+
 const starterPriceBySlug = {
   "complete-engine-assembly": 750000,
   "engine-parts-accessories": 35000,
@@ -40,6 +79,46 @@ const starterPriceBySlug = {
 };
 
 async function main() {
+  const sellerRecords = {};
+
+  for (const [key, seller] of Object.entries(sellerProfiles)) {
+    sellerRecords[key] = await prisma.seller.upsert({
+      where: { slug: seller.slug },
+      update: seller,
+      create: seller,
+    });
+  }
+
+  await prisma.engineer.upsert({
+    where: { slug: "oshimiri-mobile-engineer-support" },
+    update: {
+      name: "Oshimiri Mobile Engineer Support",
+      whatsapp: "+2349017368066",
+      phone: "+2349017368066",
+      location: "Nigeria",
+      specialty: "Inspection, fitting, suspension, engine, and general vehicle repair",
+      experience: "Seller to confirm",
+      description:
+        "Repair support desk for customers who need an available automotive engineer for inspection, fitting, or vehicle repair. Customer should confirm scope, cost, location, and warranty before work begins.",
+      verified: true,
+      rating: "4.8",
+      imageUrl: "/images/engineers/engineer-repair.jpg",
+    },
+    create: {
+      name: "Oshimiri Mobile Engineer Support",
+      slug: "oshimiri-mobile-engineer-support",
+      whatsapp: "+2349017368066",
+      phone: "+2349017368066",
+      location: "Nigeria",
+      specialty: "Inspection, fitting, suspension, engine, and general vehicle repair",
+      experience: "Seller to confirm",
+      description:
+        "Repair support desk for customers who need an available automotive engineer for inspection, fitting, or vehicle repair. Customer should confirm scope, cost, location, and warranty before work begins.",
+      verified: true,
+      rating: "4.8",
+      imageUrl: "/images/engineers/engineer-repair.jpg",
+    },
+  });
 
   const suspension = await prisma.category.upsert({
     where: { slug: "suspension" },
@@ -117,6 +196,8 @@ async function main() {
     update: {
       ...sellers.fidel,
       imageUrl: "/images/products/product-toyota-camry-front-coil-spring.jpg",
+      imageUrls: ["/images/products/product-toyota-camry-front-coil-spring.jpg"],
+      sellerId: sellerRecords.fidel.id,
     },
     create: {
       name: "Front Coil Spring - Toyota Camry",
@@ -127,7 +208,9 @@ async function main() {
       condition: "New",
       location: "Lagos, Nigeria",
       imageUrl: "/images/products/product-toyota-camry-front-coil-spring.jpg",
+      imageUrls: ["/images/products/product-toyota-camry-front-coil-spring.jpg"],
       ...sellers.fidel,
+      sellerId: sellerRecords.fidel.id,
       vehicleMakeModel: "Toyota Camry",
       yearRange: "Seller to confirm",
       position: "Front",
@@ -140,7 +223,9 @@ async function main() {
     where: { slug: "rear-shock-absorber-honda-accord" },
     update: {
       imageUrl: "/images/products/product-honda-accord-rear-shock.jpg",
+      imageUrls: ["/images/products/product-honda-accord-rear-shock.jpg"],
       ...sellers.fidel,
+      sellerId: sellerRecords.fidel.id,
     },
     create: {
       name: "Rear Shock Absorber - Honda Accord",
@@ -151,7 +236,9 @@ async function main() {
       condition: "New",
       location: "Abuja, Nigeria",
       imageUrl: "/images/products/product-honda-accord-rear-shock.jpg",
+      imageUrls: ["/images/products/product-honda-accord-rear-shock.jpg"],
       ...sellers.fidel,
+      sellerId: sellerRecords.fidel.id,
       vehicleMakeModel: "Honda Accord",
       yearRange: "Seller to confirm",
       position: "Rear",
@@ -164,7 +251,9 @@ async function main() {
     where: { slug: "led-headlight-unit-bmw-3-series" },
     update: {
       imageUrl: "/images/products/product-bmw-3-series-led-headlight.jpg",
+      imageUrls: ["/images/products/product-bmw-3-series-led-headlight.jpg"],
       ...sellers.oshimiri,
+      sellerId: sellerRecords.oshimiri.id,
     },
     create: {
       name: "LED Headlight Unit - BMW 3 Series",
@@ -175,7 +264,9 @@ async function main() {
       condition: "Used",
       location: "Nigeria",
       imageUrl: "/images/products/product-bmw-3-series-led-headlight.jpg",
+      imageUrls: ["/images/products/product-bmw-3-series-led-headlight.jpg"],
       ...sellers.oshimiri,
+      sellerId: sellerRecords.oshimiri.id,
       vehicleMakeModel: "BMW 3 Series",
       yearRange: "Seller to confirm",
       inStock: true,
@@ -464,6 +555,11 @@ async function main() {
     const productWithPrice = {
       ...product,
       price: product.price ?? starterPriceBySlug[product.slug] ?? null,
+      imageUrls: product.imageUrls ?? (product.imageUrl ? [product.imageUrl] : []),
+      sellerId:
+        product.sellerName === sellers.fidel.sellerName
+          ? sellerRecords.fidel.id
+          : sellerRecords.oshimiri.id,
     };
 
     await prisma.product.upsert({

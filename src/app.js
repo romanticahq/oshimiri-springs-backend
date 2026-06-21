@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 import healthRoutes from "./routes/health.routes.js";
 import categoryRoutes from "./routes/categories.routes.js";
 import productRoutes from "./routes/products.routes.js";
+import sellerRoutes from "./routes/sellers.routes.js";
+import engineerRoutes from "./routes/engineers.routes.js";
 import { notFound } from "./middleware/not-found.middleware.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
@@ -29,6 +31,8 @@ app.get("/", (req, res) => {
 app.use("/api/health", healthRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/sellers", sellerRoutes);
+app.use("/api/engineers", engineerRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

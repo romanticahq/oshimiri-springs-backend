@@ -6,18 +6,73 @@ import {
 
 export async function getProducts(req, res, next) {
   try {
-    const { category } = req.query;
+    const {
+      category,
+      condition,
+      location,
+      make,
+      model,
+      year,
+      q,
+      seller,
+    } = req.query;
+
+    const searchTerms = [q, make, model, year].filter(Boolean);
+    const where = {
+      ...(category && category !== "all" && {
+        category: {
+          slug: category,
+        },
+      }),
+      ...(condition && condition !== "all" && {
+        condition: {
+          contains: condition,
+          mode: "insensitive",
+        },
+      }),
+      ...(location && {
+        location: {
+          contains: location,
+          mode: "insensitive",
+        },
+      }),
+      ...(seller && {
+        OR: [
+          {
+            seller: {
+              slug: seller,
+            },
+          },
+          {
+            sellerName: {
+              contains: seller,
+              mode: "insensitive",
+            },
+          },
+        ],
+      }),
+      ...(searchTerms.length > 0 && {
+        AND: searchTerms.map((term) => ({
+          OR: [
+            { name: { contains: term, mode: "insensitive" } },
+            { description: { contains: term, mode: "insensitive" } },
+            { location: { contains: term, mode: "insensitive" } },
+            { condition: { contains: term, mode: "insensitive" } },
+            { vehicleMakeModel: { contains: term, mode: "insensitive" } },
+            { yearRange: { contains: term, mode: "insensitive" } },
+            { brand: { contains: term, mode: "insensitive" } },
+            { batterySize: { contains: term, mode: "insensitive" } },
+            { category: { name: { contains: term, mode: "insensitive" } } },
+          ],
+        })),
+      }),
+    };
 
     const products = await prisma.product.findMany({
-      where: category
-        ? {
-            category: {
-              slug: category,
-            },
-          }
-        : undefined,
+      where,
       include: {
         category: true,
+        seller: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -72,8 +127,10 @@ export async function createProduct(req, res, next) {
       condition,
       location,
       imageUrl,
+      imageUrls,
       sellerName,
       sellerWhatsapp,
+      sellerSlug,
       vehicleMakeModel,
       yearRange,
       position,
@@ -96,6 +153,21 @@ export async function createProduct(req, res, next) {
       });
     }
 
+    const seller = sellerSlug
+      ? await prisma.seller.findUnique({
+          where: {
+            slug: sellerSlug,
+          },
+        })
+      : null;
+
+    if (sellerSlug && !seller) {
+      return res.status(400).json({
+        message: "Invalid sellerSlug",
+        status: "error",
+      });
+    }
+
     const product = await prisma.product.create({
       data: {
         name,
@@ -106,8 +178,10 @@ export async function createProduct(req, res, next) {
         condition,
         location,
         imageUrl,
-        sellerName,
-        sellerWhatsapp,
+        imageUrls: imageUrls ?? [],
+        sellerName: seller?.name ?? sellerName,
+        sellerWhatsapp: seller?.whatsapp ?? sellerWhatsapp,
+        sellerId: seller?.id,
         vehicleMakeModel,
         yearRange,
         position,
@@ -118,6 +192,7 @@ export async function createProduct(req, res, next) {
       },
       include: {
         category: true,
+        seller: true,
       },
     });
 
@@ -171,8 +246,10 @@ export async function updateProduct(req, res, next) {
       condition,
       location,
       imageUrl,
+      imageUrls,
       sellerName,
       sellerWhatsapp,
+      sellerSlug,
       vehicleMakeModel,
       yearRange,
       position,
@@ -183,6 +260,8 @@ export async function updateProduct(req, res, next) {
     } = validatedData;
 
     let categoryId = existingProduct.categoryId;
+    let sellerId = existingProduct.sellerId;
+    let linkedSeller = null;
 
     if (categorySlug) {
       const category = await prisma.category.findUnique({
@@ -201,6 +280,27 @@ export async function updateProduct(req, res, next) {
       categoryId = category.id;
     }
 
+    if (sellerSlug !== undefined) {
+      if (sellerSlug) {
+        linkedSeller = await prisma.seller.findUnique({
+          where: {
+            slug: sellerSlug,
+          },
+        });
+
+        if (!linkedSeller) {
+          return res.status(400).json({
+            message: "Invalid sellerSlug",
+            status: "error",
+          });
+        }
+
+        sellerId = linkedSeller.id;
+      } else {
+        sellerId = null;
+      }
+    }
+
     const product = await prisma.product.update({
       where: {
         slug: req.params.id,
@@ -214,8 +314,11 @@ export async function updateProduct(req, res, next) {
         ...(condition !== undefined && { condition }),
         ...(location !== undefined && { location }),
         ...(imageUrl !== undefined && { imageUrl }),
+        ...(imageUrls !== undefined && { imageUrls }),
         ...(sellerName !== undefined && { sellerName }),
         ...(sellerWhatsapp !== undefined && { sellerWhatsapp }),
+        ...(linkedSeller && { sellerName: linkedSeller.name, sellerWhatsapp: linkedSeller.whatsapp }),
+        ...(sellerSlug !== undefined && { sellerId }),
         ...(vehicleMakeModel !== undefined && { vehicleMakeModel }),
         ...(yearRange !== undefined && { yearRange }),
         ...(position !== undefined && { position }),
@@ -226,6 +329,7 @@ export async function updateProduct(req, res, next) {
       },
       include: {
         category: true,
+        seller: true,
       },
     });
 
