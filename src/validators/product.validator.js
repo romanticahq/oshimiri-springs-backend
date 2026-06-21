@@ -9,6 +9,7 @@ export const createProductSchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "slug must be URL friendly"),
   description: z.string().trim().optional(),
   price: z.coerce.number().int().positive("price must be greater than 0").optional().nullable(),
+  priceLabel: z.string().trim().optional().nullable(),
   currency: z.string().trim().default("NGN"),
   condition: z.string().trim().min(2, "condition is required"),
   location: z.string().trim().min(2, "location is required"),

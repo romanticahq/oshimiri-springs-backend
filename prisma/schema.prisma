@@ -22,6 +22,7 @@ model Product {
   slug        String   @unique
   description String?
   price       Int?
+  priceLabel  String?
   currency    String   @default("NGN")
   condition   String
   location    String

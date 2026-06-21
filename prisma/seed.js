@@ -555,6 +555,7 @@ async function main() {
     const productWithPrice = {
       ...product,
       price: product.price ?? starterPriceBySlug[product.slug] ?? null,
+      priceLabel: product.price ?? starterPriceBySlug[product.slug] ? null : "Negotiable",
       imageUrls: product.imageUrls ?? (product.imageUrl ? [product.imageUrl] : []),
       sellerId:
         product.sellerName === sellers.fidel.sellerName
