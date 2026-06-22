@@ -12,6 +12,7 @@ export const createProductSubmissionSchema = z.object({
   imageUrls: z.array(z.string().trim().min(1)).optional(),
   sellerName: z.string().trim().min(2, "seller name is required"),
   sellerWhatsapp: z.string().trim().min(7, "seller WhatsApp is required"),
+  sellerAccessCode: z.string().trim().min(4, "seller access code is required"),
   vehicleMakeModel: z.string().trim().optional(),
   yearRange: z.string().trim().optional(),
   position: z.string().trim().optional(),

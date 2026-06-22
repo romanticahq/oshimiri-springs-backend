@@ -1,7 +1,45 @@
 import { prisma } from "../config/prisma.js";
 import { createSellerSchema, updateSellerSchema } from "../validators/seller.validator.js";
 
+function createAccessCode(name = "seller") {
+  const prefix = name
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 14) || "SELLER";
+  return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+}
+
+function publicSeller(seller) {
+  const { accessCode, ...safeSeller } = seller;
+  return safeSeller;
+}
+
 export async function getSellers(req, res, next) {
+  try {
+    const sellers = await prisma.seller.findMany({
+      include: {
+        _count: {
+          select: {
+            products: true,
+          },
+        },
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+
+    res.json({
+      count: sellers.length,
+      data: sellers.map(publicSeller),
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getAdminSellers(req, res, next) {
   try {
     const sellers = await prisma.seller.findMany({
       include: {
@@ -25,12 +63,36 @@ export async function getSellers(req, res, next) {
   }
 }
 
+export async function getSellerByAccessCode(req, res, next) {
+  try {
+    const seller = await prisma.seller.findUnique({
+      where: {
+        accessCode: req.params.code,
+      },
+    });
+
+    if (!seller || !seller.verified) {
+      return res.status(404).json({
+        message: "Seller access code is invalid or not approved yet",
+        status: "error",
+      });
+    }
+
+    res.json({
+      data: publicSeller(seller),
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function createSeller(req, res, next) {
   try {
     const data = createSellerSchema.parse(req.body);
     const seller = await prisma.seller.create({
       data: {
         ...data,
+        accessCode: data.accessCode || createAccessCode(data.name),
         verified: data.verified ?? false,
       },
     });

@@ -8,6 +8,7 @@ export const createSellerSchema = z.object({
     .min(2, "slug is required")
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "slug must be URL friendly"),
   whatsapp: z.string().trim().min(7, "whatsapp is required"),
+  accessCode: z.string().trim().optional().nullable(),
   phone: z.string().trim().optional(),
   location: z.string().trim().optional(),
   coverageArea: z.string().trim().optional(),

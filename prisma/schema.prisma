@@ -52,6 +52,7 @@ model Seller {
   name        String
   slug        String    @unique
   whatsapp    String
+  accessCode  String?   @unique
   phone       String?
   location    String?
   coverageArea String?
@@ -95,6 +96,7 @@ model ProductSubmission {
   imageUrls   String[] @default([])
   sellerName  String
   sellerWhatsapp String
+  sellerAccessCode String?
   vehicleMakeModel String?
   yearRange   String?
   position    String?

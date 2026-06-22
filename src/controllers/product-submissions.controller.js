@@ -7,10 +7,24 @@ import {
 export async function createProductSubmission(req, res, next) {
   try {
     const data = createProductSubmissionSchema.parse(req.body);
+    const seller = await prisma.seller.findUnique({
+      where: {
+        accessCode: data.sellerAccessCode,
+      },
+    });
+
+    if (!seller || !seller.verified) {
+      return res.status(403).json({
+        message: "Seller access code is invalid or not approved yet",
+        status: "error",
+      });
+    }
 
     const submission = await prisma.productSubmission.create({
       data: {
         ...data,
+        sellerName: seller.name,
+        sellerWhatsapp: seller.whatsapp,
         imageUrls: data.imageUrls ?? [],
         status: "pending",
       },
