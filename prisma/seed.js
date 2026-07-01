@@ -27,12 +27,12 @@ const sellerProfiles = {
     accessCode: "FIDEL-SPRINGS-2026",
     phone: "+2349017368066",
     location: "Nigeria",
-    coverageArea: "Nationwide / seller to confirm",
+    coverageArea: "Nigeria",
     specialty: "Leaf springs, coil springs, bushings, and suspension parts",
     description:
-      "Verified Oshimiri seller for used and tokunbo suspension parts. Buyers should confirm exact fitment, condition, and availability before payment.",
+      "Approved Oshimiri seller for used and tokunbo suspension parts. Buyers should confirm exact fitment, condition, and availability before payment.",
     verified: true,
-    rating: "4.7",
+    rating: null,
   },
   oshimiri: {
     name: "Oshimiri Sourcing Desk",
@@ -46,7 +46,7 @@ const sellerProfiles = {
     description:
       "Oshimiri support desk for parts sourcing, seller coordination, and buyer enquiries across Nigeria.",
     verified: true,
-    rating: "4.8",
+    rating: null,
   },
   ekSprings: {
     name: "E&K Springs Enterprises",
@@ -55,12 +55,12 @@ const sellerProfiles = {
     accessCode: "EK-SPRINGS-2026",
     phone: "+2349017368066",
     location: "Nigeria",
-    coverageArea: "Nationwide / seller to confirm",
+    coverageArea: "Nigeria",
     specialty: "Suspension springs and commercial vehicle spring support",
     description:
       "Featured suspension seller for springs and suspension support. Availability and prices should be confirmed directly.",
     verified: true,
-    rating: "4.8",
+    rating: null,
   },
 };
 
@@ -102,13 +102,13 @@ async function main() {
       whatsapp: "+2349017368066",
       phone: "+2349017368066",
       location: "Nigeria",
-      coverageArea: "Nationwide / seller to confirm",
+      coverageArea: "Nigeria",
       specialty: "Inspection, fitting, suspension, engine, and general vehicle repair",
-      experience: "Seller to confirm",
+      experience: "Confirm availability and experience with Oshimiri",
       description:
         "Repair support desk for customers who need an available automotive engineer for inspection, fitting, or vehicle repair. Customer should confirm scope, cost, location, and warranty before work begins.",
       verified: true,
-      rating: "4.8",
+      rating: null,
       imageUrl: "/images/engineers/engineer-repair.jpg",
     },
     create: {
@@ -117,13 +117,13 @@ async function main() {
       whatsapp: "+2349017368066",
       phone: "+2349017368066",
       location: "Nigeria",
-      coverageArea: "Nationwide / seller to confirm",
+      coverageArea: "Nigeria",
       specialty: "Inspection, fitting, suspension, engine, and general vehicle repair",
-      experience: "Seller to confirm",
+      experience: "Confirm availability and experience with Oshimiri",
       description:
         "Repair support desk for customers who need an available automotive engineer for inspection, fitting, or vehicle repair. Customer should confirm scope, cost, location, and warranty before work begins.",
       verified: true,
-      rating: "4.8",
+      rating: null,
       imageUrl: "/images/engineers/engineer-repair.jpg",
     },
   });
@@ -273,7 +273,7 @@ async function main() {
       currency: "NGN",
       condition: "Used",
       location: "Nigeria",
-      coverageArea: "Nationwide / seller to confirm",
+      coverageArea: "Nigeria",
       imageUrl: "/images/products/product-bmw-3-series-led-headlight.jpg",
       imageUrls: ["/images/products/product-bmw-3-series-led-headlight.jpg"],
       ...sellers.oshimiri,
