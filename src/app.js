@@ -10,6 +10,7 @@ import productRoutes from "./routes/products.routes.js";
 import sellerRoutes from "./routes/sellers.routes.js";
 import engineerRoutes from "./routes/engineers.routes.js";
 import productSubmissionRoutes from "./routes/product-submissions.routes.js";
+import customerEnquiryRoutes from "./routes/customer-enquiries.routes.js";
 import { notFound } from "./middleware/not-found.middleware.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
@@ -35,6 +36,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/sellers", sellerRoutes);
 app.use("/api/engineers", engineerRoutes);
 app.use("/api/product-submissions", productSubmissionRoutes);
+app.use("/api/customer-enquiries", customerEnquiryRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
