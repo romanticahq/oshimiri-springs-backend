@@ -10,8 +10,14 @@ const SUBMISSION_WINDOW_MS = 60_000;
 async function sendNotification(enquiry) {
   if (!process.env.RESEND_API_KEY) return;
 
-  const destination = process.env.ENQUIRY_NOTIFICATION_EMAIL || "admin@oshimiriauto.com";
-  const sender = process.env.ENQUIRY_FROM_EMAIL || "Oshimiri Website <enquiries@oshimiriauto.com>";
+  const destination =
+    process.env.ENQUIRY_NOTIFICATION_EMAIL ||
+    process.env.CONTACT_NOTIFICATION_EMAIL ||
+    "admin@oshimiriauto.com";
+  const sender =
+    process.env.ENQUIRY_FROM_EMAIL ||
+    process.env.CONTACT_FROM_EMAIL ||
+    "Oshimiri Website <enquiries@oshimiriauto.com>";
   const details = [
     `Name: ${enquiry.name}`,
     `Email: ${enquiry.email}`,
@@ -42,7 +48,8 @@ async function sendNotification(enquiry) {
   });
 
   if (!response.ok) {
-    console.error("Could not send enquiry notification", response.status);
+    const errorBody = await response.text();
+    console.error("Could not send enquiry notification", response.status, errorBody);
   }
 }
 
