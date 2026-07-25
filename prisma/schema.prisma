@@ -17,100 +17,124 @@ model Category {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?
-  price       Int?
-  priceLabel  String?
-  currency    String   @default("NGN")
-  condition   String
-  location    String
-  coverageArea String?
-  imageUrl    String?
-  imageUrls   String[] @default([])
-  sellerName  String?
-  sellerWhatsapp String?
-  sellerId    String?
-  vehicleMakeModel String?
-  yearRange   String?
-  position    String?
-  brand       String?
-  batterySize String?
-  inStock     Boolean  @default(true)
+  id                 String    @id @default(cuid())
+  publicReference    String    @unique
+  name               String
+  slug               String    @unique
+  description        String?
+  price              Int?
+  priceLabel         String?
+  currency           String    @default("NGN")
+  condition          String
+  location           String
+  coverageArea       String?
+  imageUrl           String?
+  imageUrls          String[]  @default([])
+  sellerName         String?
+  sellerWhatsapp     String?
+  sellerId           String?
+  vehicleMakeModel   String?
+  yearRange          String?
+  position           String?
+  brand              String?
+  batterySize        String?
+  inStock            Boolean   @default(true)
+  vehicleMake        String?
+  vehicleModel       String?
+  yearFrom           Int?
+  yearTo             Int?
+  engineCode         String?
+  oemPartNumber      String?
+  partNumber         String?
+  side               String?
+  bodyType           String?
+  warranty           String?
+  availabilityStatus String    @default("available")
+  lastConfirmedAt    DateTime?
+  publishedAt        DateTime  @default(now())
+  archivedAt         DateTime?
 
   categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-  seller     Seller?  @relation(fields: [sellerId], references: [id])
+  category   Category            @relation(fields: [categoryId], references: [id])
+  seller     Seller?             @relation(fields: [sellerId], references: [id])
+  reports    MarketplaceReport[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Seller {
-  id          String    @id @default(cuid())
-  name        String
-  slug        String    @unique
-  whatsapp    String
-  accessCode  String?   @unique
-  phone       String?
-  location    String?
-  coverageArea String?
-  specialty   String?
-  description String?
-  verified    Boolean   @default(false)
-  rating      String?
-  products    Product[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                   String              @id @default(cuid())
+  name                 String
+  slug                 String              @unique
+  whatsapp             String
+  accessCode           String?             @unique
+  accessTokenHash      String?             @unique
+  accessTokenExpiresAt DateTime?
+  accessRevokedAt      DateTime?
+  phone                String?
+  location             String?
+  coverageArea         String?
+  specialty            String?
+  description          String?
+  verified             Boolean             @default(false)
+  verifiedAt           DateTime?
+  suspendedAt          DateTime?
+  rating               String?
+  products             Product[]
+  reports              MarketplaceReport[]
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
 }
 
 model Engineer {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  whatsapp    String
-  phone       String?
-  location    String
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  whatsapp     String
+  phone        String?
+  location     String
   coverageArea String?
-  specialty   String
-  experience  String?
-  description String?
-  verified    Boolean  @default(false)
-  rating      String?
-  imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  specialty    String
+  experience   String?
+  description  String?
+  verified     Boolean  @default(false)
+  rating       String?
+  imageUrl     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model ProductSubmission {
-  id          String   @id @default(cuid())
-  name        String
-  categorySlug String
-  price       Int?
-  priceLabel  String?
-  condition   String
-  location    String
-  coverageArea String?
-  imageUrl    String?
-  imageUrls   String[] @default([])
-  sellerName  String
-  sellerWhatsapp String
+  id               String   @id @default(cuid())
+  name             String
+  categorySlug     String
+  price            Int?
+  priceLabel       String?
+  condition        String
+  location         String
+  coverageArea     String?
+  imageUrl         String?
+  imageUrls        String[] @default([])
+  sellerName       String
+  sellerWhatsapp   String
   sellerAccessCode String?
+  sellerId         String?
   vehicleMakeModel String?
-  yearRange   String?
-  position    String?
-  brand       String?
-  batterySize String?
-  description String?
-  status      String   @default("pending")
-  adminNote   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  yearRange        String?
+  position         String?
+  brand            String?
+  batterySize      String?
+  description      String?
+  status           String   @default("pending")
+  adminNote        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model CustomerEnquiry {
   id               String   @id @default(cuid())
+  publicReference  String   @unique
   name             String
   email            String
   phone            String
@@ -127,4 +151,68 @@ model CustomerEnquiry {
   updatedAt        DateTime @updatedAt
 
   @@index([status, createdAt])
+}
+
+model AdminUser {
+  id           String         @id @default(cuid())
+  username     String         @unique
+  passwordHash String
+  role         String         @default("admin")
+  active       Boolean        @default(true)
+  lastLoginAt  DateTime?
+  sessions     AdminSession[]
+  auditLogs    AuditLog[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model AdminSession {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  expiresAt DateTime
+  userAgent String?
+  ipAddress String?
+  adminId   String
+  admin     AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id         String     @id @default(cuid())
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  adminId    String?
+  admin      AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  createdAt  DateTime   @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model MarketplaceReport {
+  id              String   @id @default(cuid())
+  publicReference String   @unique
+  reportType      String
+  reason          String
+  details         String
+  reporterName    String?
+  reporterEmail   String?
+  reporterPhone   String?
+  productId       String?
+  sellerId        String?
+  status          String   @default("new")
+  adminNote       String?
+  product         Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  seller          Seller?  @relation(fields: [sellerId], references: [id], onDelete: SetNull)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([productId])
+  @@index([sellerId])
 }

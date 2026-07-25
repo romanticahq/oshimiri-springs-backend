@@ -23,6 +23,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY package*.json ./
 COPY prisma ./prisma
 COPY prisma.config.ts ./
+COPY scripts ./scripts
 COPY src ./src
 
 EXPOSE 5001

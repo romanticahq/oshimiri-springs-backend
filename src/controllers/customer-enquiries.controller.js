@@ -3,6 +3,7 @@ import {
   createCustomerEnquirySchema,
   updateCustomerEnquirySchema,
 } from "../validators/customer-enquiry.validator.js";
+import { createPublicReference } from "../utils/reference.js";
 
 const recentSubmissions = new Map();
 const SUBMISSION_WINDOW_MS = 60_000;
@@ -175,6 +176,7 @@ export async function createCustomerEnquiry(req, res, next) {
     const enquiry = await prisma.customerEnquiry.create({
       data: {
         ...enquiryData,
+        publicReference: createPublicReference(enquiryData.enquiryType === "complaint" ? "CMP" : "ENQ"),
         whatsapp: enquiryData.whatsapp || null,
         partName: enquiryData.partName || null,
         vehicleDetails: enquiryData.vehicleDetails || null,
@@ -189,7 +191,7 @@ export async function createCustomerEnquiry(req, res, next) {
 
     res.status(201).json({
       message: "Thank you. Your message has been sent to Oshimiri.",
-      reference: enquiry.id,
+      reference: enquiry.publicReference,
       status: "success",
     });
   } catch (error) {

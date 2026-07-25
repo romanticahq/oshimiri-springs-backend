@@ -3,6 +3,8 @@ import {
   createProductSchema,
   updateProductSchema,
 } from "../validators/product.validator.js";
+import { createPublicReference } from "../utils/reference.js";
+import { recordAudit } from "../services/audit.js";
 
 export async function getProducts(req, res, next) {
   try {
@@ -20,6 +22,7 @@ export async function getProducts(req, res, next) {
 
     const searchTerms = [q, make, model, year].filter(Boolean);
     const where = {
+      archivedAt: null,
       ...(category && category !== "all" && {
         category: {
           slug: category,
@@ -70,6 +73,12 @@ export async function getProducts(req, res, next) {
             { yearRange: { contains: term, mode: "insensitive" } },
             { brand: { contains: term, mode: "insensitive" } },
             { batterySize: { contains: term, mode: "insensitive" } },
+            { publicReference: { contains: term, mode: "insensitive" } },
+            { vehicleMake: { contains: term, mode: "insensitive" } },
+            { vehicleModel: { contains: term, mode: "insensitive" } },
+            { engineCode: { contains: term, mode: "insensitive" } },
+            { oemPartNumber: { contains: term, mode: "insensitive" } },
+            { partNumber: { contains: term, mode: "insensitive" } },
             { category: { name: { contains: term, mode: "insensitive" } } },
           ],
         })),
@@ -104,6 +113,7 @@ export async function getProductById(req, res, next) {
       },
       include: {
         category: true,
+        seller: true,
       },
     });
 
@@ -147,6 +157,18 @@ export async function createProduct(req, res, next) {
       brand,
       batterySize,
       inStock,
+      vehicleMake,
+      vehicleModel,
+      yearFrom,
+      yearTo,
+      engineCode,
+      oemPartNumber,
+      partNumber,
+      side,
+      bodyType,
+      warranty,
+      availabilityStatus,
+      lastConfirmedAt,
       categorySlug,
     } = validatedData;
 
@@ -180,6 +202,7 @@ export async function createProduct(req, res, next) {
 
     const product = await prisma.product.create({
       data: {
+        publicReference: createPublicReference("PRD"),
         name,
         slug,
         description,
@@ -200,6 +223,18 @@ export async function createProduct(req, res, next) {
         brand,
         batterySize,
         inStock: inStock ?? true,
+        vehicleMake,
+        vehicleModel,
+        yearFrom,
+        yearTo,
+        engineCode,
+        oemPartNumber,
+        partNumber,
+        side,
+        bodyType,
+        warranty,
+        availabilityStatus: availabilityStatus ?? "available",
+        lastConfirmedAt: lastConfirmedAt ?? new Date(),
         categoryId: category.id,
       },
       include: {
@@ -207,6 +242,7 @@ export async function createProduct(req, res, next) {
         seller: true,
       },
     });
+    await recordAudit(req, "product.create", "Product", product.id);
 
     return res.status(201).json({
       message: "Product created successfully",
@@ -270,6 +306,18 @@ export async function updateProduct(req, res, next) {
       brand,
       batterySize,
       inStock,
+      vehicleMake,
+      vehicleModel,
+      yearFrom,
+      yearTo,
+      engineCode,
+      oemPartNumber,
+      partNumber,
+      side,
+      bodyType,
+      warranty,
+      availabilityStatus,
+      lastConfirmedAt,
       categorySlug,
     } = validatedData;
 
@@ -341,6 +389,21 @@ export async function updateProduct(req, res, next) {
         ...(brand !== undefined && { brand }),
         ...(batterySize !== undefined && { batterySize }),
         ...(inStock !== undefined && { inStock }),
+        ...(vehicleMake !== undefined && { vehicleMake }),
+        ...(vehicleModel !== undefined && { vehicleModel }),
+        ...(yearFrom !== undefined && { yearFrom }),
+        ...(yearTo !== undefined && { yearTo }),
+        ...(engineCode !== undefined && { engineCode }),
+        ...(oemPartNumber !== undefined && { oemPartNumber }),
+        ...(partNumber !== undefined && { partNumber }),
+        ...(side !== undefined && { side }),
+        ...(bodyType !== undefined && { bodyType }),
+        ...(warranty !== undefined && { warranty }),
+        ...(availabilityStatus !== undefined && {
+          availabilityStatus,
+          archivedAt: availabilityStatus === "archived" ? new Date() : null,
+        }),
+        ...(lastConfirmedAt !== undefined && { lastConfirmedAt }),
         categoryId,
       },
       include: {
@@ -348,6 +411,7 @@ export async function updateProduct(req, res, next) {
         seller: true,
       },
     });
+    await recordAudit(req, "product.update", "Product", product.id);
 
     return res.json({
       message: "Product updated successfully",
@@ -393,6 +457,7 @@ export async function deleteProduct(req, res, next) {
         slug: req.params.id,
       },
     });
+    await recordAudit(req, "product.delete", "Product", existingProduct.id);
 
     return res.json({
       message: "Product deleted successfully",

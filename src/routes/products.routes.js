@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAdminApiKey } from "../middleware/admin-auth.middleware.js";
+import { requireAdminSession } from "../middleware/admin-session.middleware.js";
 import {
   createProduct,
   deleteProduct,
@@ -11,9 +11,9 @@ import {
 const router = Router();
 
 router.get("/", getProducts);
-router.post("/", requireAdminApiKey, createProduct);
+router.post("/", requireAdminSession, createProduct);
 router.get("/:id", getProductById);
-router.patch("/:id", requireAdminApiKey, updateProduct);
-router.delete("/:id", requireAdminApiKey, deleteProduct);
+router.patch("/:id", requireAdminSession, updateProduct);
+router.delete("/:id", requireAdminSession, deleteProduct);
 
 export default router;

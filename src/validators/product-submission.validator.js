@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+const imageUrl = z
+  .string()
+  .trim()
+  .max(2048)
+  .refine((value) => !value || /^https:\/\//i.test(value), "images must use an approved HTTPS URL");
+
 export const createProductSubmissionSchema = z.object({
   name: z.string().trim().min(2, "product name is required"),
   categorySlug: z.string().trim().min(2, "category is required"),
@@ -8,11 +14,11 @@ export const createProductSubmissionSchema = z.object({
   condition: z.string().trim().min(2, "condition is required"),
   location: z.string().trim().min(2, "location is required"),
   coverageArea: z.string().trim().optional(),
-  imageUrl: z.string().trim().optional(),
-  imageUrls: z.array(z.string().trim().min(1)).optional(),
+  imageUrl: imageUrl.optional(),
+  imageUrls: z.array(imageUrl).max(10).optional(),
   sellerName: z.string().trim().min(2, "seller name is required"),
   sellerWhatsapp: z.string().trim().min(7, "seller WhatsApp is required"),
-  sellerAccessCode: z.string().trim().min(4, "seller access code is required"),
+  sellerAccessToken: z.string().trim().min(32, "a valid seller access link is required"),
   vehicleMakeModel: z.string().trim().optional(),
   yearRange: z.string().trim().optional(),
   position: z.string().trim().optional(),

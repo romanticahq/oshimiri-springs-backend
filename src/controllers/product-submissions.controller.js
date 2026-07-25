@@ -3,26 +3,35 @@ import {
   createProductSubmissionSchema,
   updateProductSubmissionSchema,
 } from "../validators/product-submission.validator.js";
+import { hashToken } from "../utils/security.js";
 
 export async function createProductSubmission(req, res, next) {
   try {
     const data = createProductSubmissionSchema.parse(req.body);
     const seller = await prisma.seller.findUnique({
-      where: {
-        accessCode: data.sellerAccessCode,
-      },
+      where: { accessTokenHash: hashToken(data.sellerAccessToken) },
     });
 
-    if (!seller || !seller.verified) {
+    if (
+      !seller ||
+      !seller.verified ||
+      seller.suspendedAt ||
+      seller.accessRevokedAt ||
+      !seller.accessTokenExpiresAt ||
+      seller.accessTokenExpiresAt <= new Date()
+    ) {
       return res.status(403).json({
-        message: "Seller access code is invalid or not approved yet",
+        message: "Seller access link is invalid, expired, or unavailable",
         status: "error",
       });
     }
 
+    const { sellerAccessToken: _sellerAccessToken, ...submissionData } = data;
     const submission = await prisma.productSubmission.create({
       data: {
-        ...data,
+        ...submissionData,
+        sellerAccessCode: null,
+        sellerId: seller.id,
         sellerName: seller.name,
         sellerWhatsapp: seller.whatsapp,
         imageUrls: data.imageUrls ?? [],

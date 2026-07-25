@@ -1,17 +1,26 @@
 import { prisma } from "../config/prisma.js";
 import { createSellerSchema, updateSellerSchema } from "../validators/seller.validator.js";
+import { createOpaqueToken, hashToken } from "../utils/security.js";
+import { recordAudit } from "../services/audit.js";
 
-function createAccessCode(name = "seller") {
-  const prefix = name
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 14) || "SELLER";
-  return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+const SELLER_ACCESS_DAYS = Number(process.env.SELLER_ACCESS_DAYS || 30);
+
+function issueSellerAccess() {
+  const token = createOpaqueToken();
+  return {
+    token,
+    tokenHash: hashToken(token),
+    expiresAt: new Date(Date.now() + SELLER_ACCESS_DAYS * 86400000),
+  };
 }
 
 function publicSeller(seller) {
-  const { accessCode, ...safeSeller } = seller;
+  const { accessCode, accessTokenHash, accessTokenExpiresAt, accessRevokedAt, ...safeSeller } = seller;
+  return safeSeller;
+}
+
+function adminSeller(seller) {
+  const { accessCode, accessTokenHash, ...safeSeller } = seller;
   return safeSeller;
 }
 
@@ -56,7 +65,7 @@ export async function getAdminSellers(req, res, next) {
 
     res.json({
       count: sellers.length,
-      data: sellers,
+      data: sellers.map(adminSeller),
     });
   } catch (error) {
     next(error);
@@ -66,14 +75,19 @@ export async function getAdminSellers(req, res, next) {
 export async function getSellerByAccessCode(req, res, next) {
   try {
     const seller = await prisma.seller.findUnique({
-      where: {
-        accessCode: req.params.code,
-      },
+      where: { accessTokenHash: hashToken(req.params.code) },
     });
 
-    if (!seller || !seller.verified) {
+    if (
+      !seller ||
+      !seller.verified ||
+      seller.suspendedAt ||
+      seller.accessRevokedAt ||
+      !seller.accessTokenExpiresAt ||
+      seller.accessTokenExpiresAt <= new Date()
+    ) {
       return res.status(404).json({
-        message: "Seller access code is invalid or not approved yet",
+        message: "Seller access link is invalid, expired, or unavailable",
         status: "error",
       });
     }
@@ -89,17 +103,22 @@ export async function getSellerByAccessCode(req, res, next) {
 export async function createSeller(req, res, next) {
   try {
     const data = createSellerSchema.parse(req.body);
+    const access = issueSellerAccess();
     const seller = await prisma.seller.create({
       data: {
         ...data,
-        accessCode: data.accessCode || createAccessCode(data.name),
+        accessCode: null,
+        accessTokenHash: access.tokenHash,
+        accessTokenExpiresAt: access.expiresAt,
+        verifiedAt: data.verified ? new Date() : null,
         verified: data.verified ?? false,
       },
     });
+    await recordAudit(req, "seller.create", "Seller", seller.id);
 
     res.status(201).json({
       message: "Seller created successfully",
-      data: seller,
+      data: { ...publicSeller(seller), accessToken: access.token },
     });
   } catch (error) {
     if (error.name === "ZodError") {
@@ -130,10 +149,11 @@ export async function updateSeller(req, res, next) {
       },
       data,
     });
+    await recordAudit(req, "seller.update", "Seller", seller.id, data);
 
     res.json({
       message: "Seller updated successfully",
-      data: seller,
+      data: publicSeller(seller),
     });
   } catch (error) {
     if (error.name === "ZodError") {
@@ -169,6 +189,7 @@ export async function deleteSeller(req, res, next) {
         slug: req.params.id,
       },
     });
+    await recordAudit(req, "seller.delete", "Seller", req.params.id);
 
     res.json({
       message: "Seller deleted successfully",
@@ -181,6 +202,40 @@ export async function deleteSeller(req, res, next) {
       });
     }
 
+    next(error);
+  }
+}
+
+export async function rotateSellerAccess(req, res, next) {
+  try {
+    const access = issueSellerAccess();
+    const seller = await prisma.seller.update({
+      where: { slug: req.params.id },
+      data: {
+        accessTokenHash: access.tokenHash,
+        accessTokenExpiresAt: access.expiresAt,
+        accessRevokedAt: null,
+      },
+    });
+    await recordAudit(req, "seller.access.rotate", "Seller", seller.id);
+    res.json({
+      message: "A new seller access link has been issued. The previous link no longer works.",
+      data: { accessToken: access.token, expiresAt: access.expiresAt },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function revokeSellerAccess(req, res, next) {
+  try {
+    const seller = await prisma.seller.update({
+      where: { slug: req.params.id },
+      data: { accessRevokedAt: new Date() },
+    });
+    await recordAudit(req, "seller.access.revoke", "Seller", seller.id);
+    res.json({ message: "Seller access has been revoked" });
+  } catch (error) {
     next(error);
   }
 }

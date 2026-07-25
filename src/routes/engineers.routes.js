@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAdminApiKey } from "../middleware/admin-auth.middleware.js";
+import { requireAdminSession } from "../middleware/admin-session.middleware.js";
 import {
   createEngineer,
   deleteEngineer,
@@ -10,8 +10,8 @@ import {
 const router = Router();
 
 router.get("/", getEngineers);
-router.post("/", requireAdminApiKey, createEngineer);
-router.patch("/:id", requireAdminApiKey, updateEngineer);
-router.delete("/:id", requireAdminApiKey, deleteEngineer);
+router.post("/", requireAdminSession, createEngineer);
+router.patch("/:id", requireAdminSession, updateEngineer);
+router.delete("/:id", requireAdminSession, deleteEngineer);
 
 export default router;

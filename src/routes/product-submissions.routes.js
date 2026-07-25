@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { requireAdminApiKey } from "../middleware/admin-auth.middleware.js";
+import { requireAdminSession } from "../middleware/admin-session.middleware.js";
+import { publicWriteLimiter, verifyTurnstile } from "../middleware/security.middleware.js";
 import {
   createProductSubmission,
   getProductSubmissions,
@@ -8,8 +9,8 @@ import {
 
 const router = Router();
 
-router.post("/", createProductSubmission);
-router.get("/", requireAdminApiKey, getProductSubmissions);
-router.patch("/:id", requireAdminApiKey, updateProductSubmission);
+router.post("/", publicWriteLimiter, verifyTurnstile, createProductSubmission);
+router.get("/", requireAdminSession, getProductSubmissions);
+router.patch("/:id", requireAdminSession, updateProductSubmission);
 
 export default router;

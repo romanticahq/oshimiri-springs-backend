@@ -1,12 +1,17 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { createHash } from "node:crypto";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
 });
 
 const prisma = new PrismaClient({ adapter });
+
+function productReference(slug) {
+  return `OSH-PRD-${createHash("sha256").update(slug).digest("hex").slice(0, 8).toUpperCase()}`;
+}
 
 const sellers = {
   fidel: {
@@ -208,6 +213,7 @@ async function main() {
       sellerId: sellerRecords.fidel.id,
     },
     create: {
+      publicReference: productReference("front-coil-spring-toyota-camry"),
       name: "Front Coil Spring - Toyota Camry",
       slug: "front-coil-spring-toyota-camry",
       description: "Front coil spring suitable for Toyota Camry models.",
@@ -237,6 +243,7 @@ async function main() {
       sellerId: sellerRecords.fidel.id,
     },
     create: {
+      publicReference: productReference("rear-shock-absorber-honda-accord"),
       name: "Rear Shock Absorber - Honda Accord",
       slug: "rear-shock-absorber-honda-accord",
       description: "Rear shock absorber suitable for Honda Accord models.",
@@ -266,6 +273,7 @@ async function main() {
       sellerId: sellerRecords.oshimiri.id,
     },
     create: {
+      publicReference: productReference("led-headlight-unit-bmw-3-series"),
       name: "LED Headlight Unit - BMW 3 Series",
       slug: "led-headlight-unit-bmw-3-series",
       description: "Used LED headlight unit for BMW 3 Series.",
@@ -565,6 +573,7 @@ async function main() {
   for (const product of starterProducts) {
     const productWithPrice = {
       ...product,
+      publicReference: productReference(product.slug),
       price: product.price ?? starterPriceBySlug[product.slug] ?? null,
       priceLabel: product.price ?? starterPriceBySlug[product.slug] ? null : "Negotiable",
       imageUrls: product.imageUrls ?? (product.imageUrl ? [product.imageUrl] : []),
