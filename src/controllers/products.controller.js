@@ -5,6 +5,7 @@ import {
 } from "../validators/product.validator.js";
 import { createPublicReference } from "../utils/reference.js";
 import { recordAudit } from "../services/audit.js";
+import { sanitizePublicProduct } from "../utils/public-data.js";
 
 export async function getProducts(req, res, next) {
   try {
@@ -98,7 +99,7 @@ export async function getProducts(req, res, next) {
 
     res.json({
       count: products.length,
-      data: products,
+      data: products.map(sanitizePublicProduct),
     });
   } catch (error) {
     next(error);
@@ -125,7 +126,7 @@ export async function getProductById(req, res, next) {
     }
 
     return res.json({
-      data: product,
+      data: sanitizePublicProduct(product),
     });
   } catch (error) {
     next(error);
